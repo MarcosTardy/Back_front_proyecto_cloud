@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir CSV</title>
+</head>
+<body>
+    <h1>Subir archivo CSV</h1>
+
+    <!-- Aquí va el formulario que me pasaste -->
+    <form action="/users/upload_csv" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Subir CSV</button>
+    </form>
+
+    <!-- Botón para volver al dashboard -->
+    <a href="/users/dashboard">
+        <button type="button">Volver</button>
+    </a>
+</body>
+</html>
