@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Optional
 from datetime import datetime, timedelta, timezone
 from fastapi import FastAPI, Request, Form, HTTPException, Cookie, Depends
 from fastapi.templating import Jinja2Templates
@@ -35,7 +35,7 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_current_user(access_token: str | None = Cookie(default=None)):
+def get_current_user(access_token: Optional[str] = Cookie(default=None)):
     if not access_token:
         raise HTTPException(status_code=401)
     try:
