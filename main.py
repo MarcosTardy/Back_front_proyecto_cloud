@@ -14,6 +14,7 @@ SECRET_KEY = "u2C2mZQ+XdCXTnHntpzsYJ3n8voe28iN7OjzIaUq3iE="
 TOKEN_SECONDS_EXP = 3600
 
 app = FastAPI()
+Base.metadata.create_all(bind=engine)
 
 jinja2_template = Jinja2Templates(directory="templates")
 
@@ -61,14 +62,27 @@ def dashboard(request: Request, username: str = Depends(get_current_user)):
     return jinja2_template.TemplateResponse("dashboard.html", {"request": request, "user": username})
 
 @app.post("/users/login")
-def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
-    db = SessionLocal()
-    user = db.query(User).filter(User.username == username)
+def login(
+    username: str = Form(...),
+    password: str = Form(...),
+    db = Depends(get_db)
+):
+    user = db.query(User).filter(User.username == username).first()
+
     if not user or not verify_password(password, user.password_hash):
-        raise HTTPException(status_code=401, detail="No authorization")
-    token = create_token({"username": user.username})
+        raise HTTPException(status_code=401, detail="No autorizado")
+
+    token = jwt.encode(
+        {
+            "username": user.username,
+            "exp": datetime.now(timezone.utc) + timedelta(seconds=3600)
+        },
+        SECRET_KEY,
+        algorithm="HS256"
+    )
+
     response = RedirectResponse("/users/dashboard", status_code=302)
-    response.set_cookie("access_token", token, max_age=TOKEN_SECONDS_EXP, httponly=True)
+    response.set_cookie("access_token", token, httponly=True)
     return response
 
     
@@ -92,6 +106,5 @@ async def upload_csv(file: UploadFile = File(...), username: str = Depends(get_c
     print(df.head())
     return {"message": "CSV subido correctamente", "rows": len(df)}
 
-Base.metadata.create_all(bind=engine)
 
 
