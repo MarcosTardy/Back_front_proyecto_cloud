@@ -4,17 +4,15 @@ from fastapi import FastAPI, Request, Form, HTTPException, Cookie, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from jose import jwt, JWTError
-from passlib.context import CryptContext
 from fastapi import UploadFile, File
 import pandas as pd
 from sqlalchemy.orm import Session
-from database import SessionLocal
-from models import User
+from database import SessionLocal, engine, User, Base, hash_password
+from passlib.context import CryptContext
 
 SECRET_KEY = "u2C2mZQ+XdCXTnHntpzsYJ3n8voe28iN7OjzIaUq3iE="
 TOKEN_SECONDS_EXP = 3600
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -29,8 +27,7 @@ def get_db():
         db.close()
 
 #Funciones de autenticación
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
@@ -91,3 +88,4 @@ async def upload_csv(file: UploadFile = File(...), username: str = Depends(get_c
     df = pd.read_csv(file.file)
     print(df.head())
     return {"message": "CSV subido correctamente", "rows": len(df)}
+
