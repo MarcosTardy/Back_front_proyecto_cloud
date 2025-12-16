@@ -6,13 +6,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from jose import jwt, JWTError
 from fastapi import UploadFile, File
 import pandas as pd
-from sqlalchemy.orm import Session
-from database import SessionLocal, engine, User, Base, hash_password
+from database import SessionLocal, engine, User, Base
 from passlib.context import CryptContext
+import models
 
 SECRET_KEY = "u2C2mZQ+XdCXTnHntpzsYJ3n8voe28iN7OjzIaUq3iE="
 TOKEN_SECONDS_EXP = 3600
-
 
 app = FastAPI()
 
@@ -28,6 +27,9 @@ def get_db():
 
 #Funciones de autenticación
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
@@ -60,6 +62,7 @@ def dashboard(request: Request, username: str = Depends(get_current_user)):
 
 @app.post("/users/login")
 def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    db = SessionLocal()
     user = db.query(User).filter(User.username == username)
     if not user or not verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="No authorization")
@@ -88,4 +91,7 @@ async def upload_csv(file: UploadFile = File(...), username: str = Depends(get_c
     df = pd.read_csv(file.file)
     print(df.head())
     return {"message": "CSV subido correctamente", "rows": len(df)}
+
+Base.metadata.create_all(bind=engine)
+
 
