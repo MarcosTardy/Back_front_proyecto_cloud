@@ -6,9 +6,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from jose import jwt, JWTError
 from fastapi import UploadFile, File
 import pandas as pd
-from database import SessionLocal, engine, User, Base
+from database import SessionLocal, engine, Base
 from passlib.context import CryptContext
-import models
+from models import User
 
 SECRET_KEY = "u2C2mZQ+XdCXTnHntpzsYJ3n8voe28iN7OjzIaUq3iE="
 TOKEN_SECONDS_EXP = 3600
