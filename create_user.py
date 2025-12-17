@@ -7,7 +7,7 @@ def create_user():
 
     user = User(
         username="admin",
-        password_hash=hash_password("12345678")
+        hashed_password=hash_password("12345678")
     )
 
     db.add(user)
