@@ -1,6 +1,6 @@
 from database import SessionLocal
 from models import User
-from main import hash_password  # o donde tengas esta función
+from security import hash_password  # o donde tengas esta función
 
 def create_user():
     db = SessionLocal()
@@ -12,7 +12,8 @@ def create_user():
 
     db.add(user)
     db.commit()
+    db.refresh(user)
 
-    print("Usuario admin creado")
+    print("Usuario admin creado con ID:", user.id)
 
     db.close()

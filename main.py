@@ -7,8 +7,8 @@ from jose import jwt, JWTError
 from fastapi import UploadFile, File
 import pandas as pd
 from database import SessionLocal, engine, Base
-from passlib.context import CryptContext
 from models import User
+from security import hash_password, verify_password
 
 SECRET_KEY = "u2C2mZQ+XdCXTnHntpzsYJ3n8voe28iN7OjzIaUq3iE="
 TOKEN_SECONDS_EXP = 3600
@@ -25,15 +25,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-#Funciones de autenticación
-pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-def verify_password(plain_password: str, hashed_password: str):
-    return pwd_context.verify(plain_password, hashed_password)
 
 def get_current_user(access_token: Optional[str] = Cookie(default=None)):
     if not access_token:
