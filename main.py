@@ -90,7 +90,7 @@ def team_page(request: Request, username: str = Depends(get_current_user)):
 
 #Para recibir y procesar el csv
 @app.post("/users/upload_csv")
-async def upload_csv(file: UploadFile = File(...), username: str = Depends(get_current_user)):
+async def upload_csv(file: UploadFile = File(...)):#, username: str = Depends(get_current_user)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Solo se permiten archivos CSV")
     df = pd.read_csv(file.file)
