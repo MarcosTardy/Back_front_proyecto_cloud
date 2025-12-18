@@ -17,3 +17,5 @@ def create_user():
     print("Usuario admin creado con ID:", user.id)
 
     db.close()
+if __name__ == "__main__":
+    create_user()
