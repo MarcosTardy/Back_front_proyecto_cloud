@@ -9,6 +9,7 @@ import pandas as pd
 from database import SessionLocal, engine, Base
 from models import User
 from security import hash_password, verify_password
+from s3_service import upload_file_to_s3
 
 SECRET_KEY = "u2C2mZQ+XdCXTnHntpzsYJ3n8voe28iN7OjzIaUq3iE="
 TOKEN_SECONDS_EXP = 3600
@@ -93,9 +94,15 @@ def team_page(request: Request, username: str = Depends(get_current_user)):
 async def upload_csv(file: UploadFile = File(...), username: str = Depends(get_current_user)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Solo se permiten archivos CSV")
-    df = pd.read_csv(file.file)
-    print(df.head())
-    return {"message": "CSV subido correctamente", "rows": len(df)}
+    s3_key = upload_file_to_s3(
+        file=file.file,
+        filename=file.filename,
+        content_type=file.content_type
+    )
+    return {
+        "message": "Archivo subido correctamente a S3",
+        "s3_key": s3_key
+    }
 
 
 
