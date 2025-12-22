@@ -92,8 +92,8 @@ def team_page(request: Request, username: str = Depends(get_current_user)):
 #Para recibir y procesar el csv
 @app.post("/users/upload_csv")
 async def upload_csv(file: UploadFile = File(...), username: str = Depends(get_current_user)):
-    if not file.filename.endswith(".csv"):
-        raise HTTPException(status_code=400, detail="Solo se permiten archivos CSV")
+    if not file.filename.endswith(".png"):
+        raise HTTPException(status_code=400, detail="Solo se permiten archivos PNG")
     s3_key = upload_file_to_s3(
         file=file.file,
         filename=file.filename,
