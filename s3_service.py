@@ -2,7 +2,7 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 import uuid
 
-S3_BUCKET_NAME = "bucket1-miproyecto"
+S3_BUCKET_NAME = "bucket-euwest1"
 
 s3_client = boto3.client("s3")  # usa IAM Role automáticamente
 
